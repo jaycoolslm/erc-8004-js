@@ -15,6 +15,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import { ERC8004Client, EthersAdapter } from "../src";
 import { ethers } from "ethers";
+import {
+  TopicMessageSubmitTransaction,
+  Client,
+  PrivateKey,
+} from "@hashgraph/sdk";
 
 // Contract addresses from your deployment
 const IDENTITY_REGISTRY = "0x4c74ebd72921d537159ed2053f46c12a7d8e5923";
@@ -63,8 +68,8 @@ function generateRandomCIDv0(): string {
 async function main() {
   console.log("🚀 ERC-8004 SDK Test\n");
 
-  // Connect to Sepolia
-  console.log("Connecting to Sepolia");
+  // Connect to Hedera
+  console.log("Connecting to Hedera");
   const provider = new ethers.JsonRpcProvider(process.env.HEDERA_RPC_URL || "");
   const HEDERA_TESTNET_PRIVATE_KEY_1 =
     process.env.HEDERA_TESTNET_PRIVATE_KEY_1 || "";
@@ -74,6 +79,11 @@ async function main() {
   const feedbackGiver = new ethers.Wallet(
     HEDERA_TESTNET_PRIVATE_KEY_2,
     provider
+  );
+
+  const client = Client.forTestnet().setOperator(
+    process.env.HEDERA_TESTNET_ACCOUNT_1,
+    PrivateKey.fromStringECDSA(HEDERA_TESTNET_PRIVATE_KEY_1)
   );
 
   // Create adapter for agent owner
@@ -199,12 +209,34 @@ async function main() {
     );
     console.log(`✅ FeedbackAuth signed: ${signedAuth.slice(0, 20)}...`);
 
+    const topicId = "0.0.7135055";
+    const feedbackMessage = `{
+  "agentRegistry": "eip155:296:${IDENTITY_REGISTRY}",
+  "agentId": ${agentId},
+  "clientAddress": "eip155:296:${HEDERA_TESTNET_PRIVATE_KEY_2}",
+  "createdAt": "${new Date().toISOString()}",
+  "feedbackAuth": "${feedbackAuth}",
+  "score": 100,
+}`;
+    const txTopicMessageSubmit = await new TopicMessageSubmitTransaction()
+      .setTopicId(topicId) //Fill in the topic ID
+      .setMessage(feedbackMessage)
+      .execute(client);
+
+    //Request the receipt of the transaction
+    const receiptTopicMessageSubmitTx = await txTopicMessageSubmit.getReceipt(
+      client
+    );
+
+    const feedbackUri = `hcs://${topicId}/${receiptTopicMessageSubmitTx.topicSequenceNumber}`;
+
     // Feedback giver submits feedback
     const feedbackResult = await feedbackClient.reputation.giveFeedback({
       agentId,
       score: 95,
       tag1: "excellent",
       tag2: "reliable",
+      feedbackUri,
       feedbackAuth: signedAuth,
     });
     console.log(`✅ Feedback submitted!`);
