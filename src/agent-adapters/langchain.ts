@@ -1,21 +1,22 @@
-import type { AgentContext } from '../agent-tools/context';
-import { createAgentTools, type CreateAgentToolsOptions } from '../agent-tools';
-import type { ToolDefinition } from '../agent-tools/types';
+import type { AgentContext } from "../agent-tools/context";
+import { createAgentTools, type CreateAgentToolsOptions } from "../agent-tools";
+import type { ToolDefinition } from "../agent-tools/types";
+import { StructuredTool } from "@langchain/core/tools";
 
-export type LangChainToolFactory = (definition: ToolDefinition, context: AgentContext) => Promise<unknown>;
+export type LangChainToolFactory = (
+  definition: ToolDefinition,
+  context: AgentContext
+) => Promise<unknown>;
 
 export interface LangChainAdapterOptions extends CreateAgentToolsOptions {
   hydrateSummary?: boolean;
 }
 
-async function toStructuredTool(
+function toStructuredTool(
   definition: ToolDefinition,
   context: AgentContext,
   hydrateSummary: boolean
-): Promise<unknown> {
-  const mod = await import('@langchain/core/tools');
-  const { StructuredTool } = mod as { StructuredTool: new () => any };
-
+): StructuredTool {
   class AgentStructuredTool extends StructuredTool {
     name = definition.name;
     description = definition.description;
@@ -25,7 +26,7 @@ async function toStructuredTool(
       const parsed = definition.schema.parse(input);
       const result = await definition.execute(context, parsed);
 
-      if (context.adapterMode === 'return-bytes') {
+      if (context.adapterMode === "return-bytes") {
         return result.data;
       }
 
@@ -47,14 +48,14 @@ async function toStructuredTool(
 export async function createLangChainTools(
   context: AgentContext,
   options: LangChainAdapterOptions = {}
-): Promise<unknown[]> {
+): Promise<StructuredTool[]> {
   const { hydrateSummary, ...selection } = options;
   const definitions = createAgentTools(selection);
   const shouldHydrate = hydrateSummary ?? true;
 
-  const tools: unknown[] = [];
+  const tools: StructuredTool[] = [];
   for (const definition of definitions) {
-    tools.push(await toStructuredTool(definition, context, shouldHydrate));
+    tools.push(toStructuredTool(definition, context, shouldHydrate));
   }
   return tools;
 }
