@@ -22,3 +22,5 @@ export {
   type IPFSClientConfig,
   type IPFSUploadResult
 } from './utils/ipfs';
+export * from './agent-tools';
+export * from './agent-adapters';
