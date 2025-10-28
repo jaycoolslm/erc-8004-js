@@ -12,21 +12,21 @@
  * - Updating tokenURI
  */
 
-import { ERC8004Client, EthersAdapter } from '../src';
-import { ethers } from 'ethers';
+import { ERC8004Client, EthersAdapter } from "../src";
+import { ethers } from "ethers";
 
 // Contract addresses from your deployment
-const IDENTITY_REGISTRY = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
-const REPUTATION_REGISTRY = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
-const VALIDATION_REGISTRY = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0';
+const IDENTITY_REGISTRY = "0x4c74ebd72921d537159ed2053f46c12a7d8e5923";
+const REPUTATION_REGISTRY = "0xc565edcba77e3abeade40bfd6cf6bf583b3293e0";
+const VALIDATION_REGISTRY = "0x18df085d85c586e9241e0cd121ca422f571c2da6";
 
 async function main() {
-  console.log('🚀 ERC-8004 SDK Test\n');
+  console.log("🚀 ERC-8004 SDK Test\n");
 
   // Connect to local Hardhat
-  console.log('Connecting to local Hardhat...');
-  const provider = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
-  const signer = await provider.getSigner(0); // Use first hardhat account
+  console.log("Connecting to Hedera testnet...");
+  const provider = new ethers.JsonRpcProvider("https://testnet.hashio.io/api");
+  const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider); // Use first hardhat account,
 
   // Create adapter
   const adapter = new EthersAdapter(provider, signer);
@@ -46,7 +46,7 @@ async function main() {
   console.log(`Connected with signer: ${signerAddress}\n`);
 
   // Test 1: Register agent with no URI, then set URI
-  console.log('Test 1: Register agent with no URI, then set URI');
+  console.log("Test 1: Register agent with no URI, then set URI");
   try {
     const result1 = await client.identity.register();
     console.log(`✅ Registered agent ID: ${result1.agentId}`);
@@ -54,7 +54,7 @@ async function main() {
     console.log(`   Owner: ${await client.identity.getOwner(result1.agentId)}`);
 
     // Set the tokenURI after registration
-    const newURI = 'ipfs://QmNewAgent456';
+    const newURI = "ipfs://QmNewAgent456";
     await client.identity.setAgentUri(result1.agentId, newURI);
     console.log(`✅ Set tokenURI to: ${newURI}`);
 
@@ -66,26 +66,31 @@ async function main() {
   }
 
   // Test 2: Register agent with URI
-  console.log('Test 2: Register agent with URI');
+  console.log("Test 2: Register agent with URI");
   try {
     // Example registration file (in production, this would be hosted)
-    const registrationURI = 'https://example.com/agent1.json';
+    const registrationURI = "https://example.com/agent1.json";
     const result2 = await client.identity.registerWithURI(registrationURI);
     console.log(`✅ Registered agent ID: ${result2.agentId}`);
     console.log(`   TX Hash: ${result2.txHash}`);
     console.log(`   Owner: ${await client.identity.getOwner(result2.agentId)}`);
-    console.log(`   URI: ${await client.identity.getTokenURI(result2.agentId)}\n`);
+    console.log(
+      `   URI: ${await client.identity.getTokenURI(result2.agentId)}\n`
+    );
   } catch (error: any) {
     console.error(`❌ Error: ${error.message}\n`);
   }
 
   // Test 3: Register agent with URI and metadata
-  console.log('Test 3: Register agent with URI and on-chain metadata');
+  console.log("Test 3: Register agent with URI and on-chain metadata");
   try {
-    const registrationURI = 'ipfs://QmExample123';
+    const registrationURI = "ipfs://QmExample123";
     const metadata = [
-      { key: 'agentName', value: 'TestAgent' },
-      { key: 'agentWallet', value: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7' }
+      { key: "agentName", value: "TestAgent" },
+      {
+        key: "agentWallet",
+        value: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7",
+      },
     ];
 
     const result3 = await client.identity.registerWithMetadata(
@@ -95,11 +100,19 @@ async function main() {
     console.log(`✅ Registered agent ID: ${result3.agentId}`);
     console.log(`   TX Hash: ${result3.txHash}`);
     console.log(`   Owner: ${await client.identity.getOwner(result3.agentId)}`);
-    console.log(`   URI: ${await client.identity.getTokenURI(result3.agentId)}`);
+    console.log(
+      `   URI: ${await client.identity.getTokenURI(result3.agentId)}`
+    );
 
     // Read back metadata
-    const agentName = await client.identity.getMetadata(result3.agentId, 'agentName');
-    const agentWallet = await client.identity.getMetadata(result3.agentId, 'agentWallet');
+    const agentName = await client.identity.getMetadata(
+      result3.agentId,
+      "agentName"
+    );
+    const agentWallet = await client.identity.getMetadata(
+      result3.agentId,
+      "agentWallet"
+    );
     console.log(`   Metadata - agentName: ${agentName}`);
     console.log(`   Metadata - agentWallet: ${agentWallet}\n`);
   } catch (error: any) {
@@ -107,19 +120,19 @@ async function main() {
   }
 
   // Test 4: Set metadata after registration
-  console.log('Test 4: Set metadata after registration');
+  console.log("Test 4: Set metadata after registration");
   try {
     const result4 = await client.identity.register();
     console.log(`✅ Registered agent ID: ${result4.agentId}`);
 
-    await client.identity.setMetadata(result4.agentId, 'status', 'active');
-    const status = await client.identity.getMetadata(result4.agentId, 'status');
+    await client.identity.setMetadata(result4.agentId, "status", "active");
+    const status = await client.identity.getMetadata(result4.agentId, "status");
     console.log(`   Set metadata - status: ${status}\n`);
   } catch (error: any) {
     console.error(`❌ Error: ${error.message}\n`);
   }
 
-  console.log('✨ All tests completed!');
+  console.log("✨ All tests completed!");
 }
 
 main()
