@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import type { ToolDefinition } from '../types';
-import type { FeedbackAuth } from '../../types';
 import {
   addressSchema,
   agentIdSchema,
@@ -8,6 +7,7 @@ import {
   createToolResult,
   toBigIntString,
 } from '../helpers';
+import { FeedbackAuth } from "erc-8004-js";
 
 const feedbackAuthSchema = z.object({
   agentId: agentIdSchema,

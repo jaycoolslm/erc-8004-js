@@ -1,6 +1,6 @@
-import type { AgentContext } from "../agent-tools/context";
+import type { AgentContext } from "../agent-tools";
 import { createAgentTools, type CreateAgentToolsOptions } from "../agent-tools";
-import type { ToolDefinition } from "../agent-tools/types";
+import type { ToolDefinition } from "../agent-tools";
 import { StructuredTool } from "@langchain/core/tools";
 
 export type LangChainToolFactory = (

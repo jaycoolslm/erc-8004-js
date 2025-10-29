@@ -1,6 +1,7 @@
-import { ERC8004Client, EthersAdapter, createAgentContext } from 'erc-8004-js';
-import { createMcpServer } from 'erc-8004-js';
 import { JsonRpcProvider } from 'ethers';
+import { ERC8004Client, EthersAdapter } from "erc-8004-js";
+import { createAgentContext } from "../src/agent-tools";
+import { createMcpServer } from "../src/agent-adapters";
 
 async function main() {
   const provider = new JsonRpcProvider(process.env.RPC_URL ?? 'http://localhost:8545');

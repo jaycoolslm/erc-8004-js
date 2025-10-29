@@ -1,10 +1,10 @@
 import {
   ERC8004Client,
   EthersAdapter,
-  createAgentContext,
-  createAiSdkTools,
 } from "erc-8004-js";
 import { JsonRpcProvider } from "ethers";
+import { createAiSdkTools } from "../src/agent-adapters";
+import { createAgentContext } from "../src/agent-tools";
 
 async function main() {
   const provider = new JsonRpcProvider(

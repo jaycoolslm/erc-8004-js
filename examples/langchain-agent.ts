@@ -1,9 +1,3 @@
-import {
-  ERC8004Client,
-  EthersAdapter,
-  createAgentContext,
-  createLangChainTools,
-} from "../../src";
 import { ethers, JsonRpcProvider } from "ethers";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
@@ -11,6 +5,9 @@ import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import { BufferMemory } from "langchain/memory";
 import dotenv from "dotenv";
 import prompts from "prompts";
+import { ERC8004Client, EthersAdapter } from "erc-8004-js";
+import { createLangChainTools } from "../src/agent-adapters";
+import { createAgentContext } from "../src/agent-tools";
 
 dotenv.config();
 
@@ -78,6 +75,7 @@ async function main() {
     tools,
     memory,
     returnIntermediateSteps: false,
+    verbose: true
   });
 
   while (true) {

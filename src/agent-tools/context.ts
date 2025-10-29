@@ -1,5 +1,4 @@
-import type { ERC8004Client } from '../ERC8004Client';
-import type { IPFSClient } from '../utils/ipfs';
+import { ERC8004Client, IPFSClient } from "erc-8004-js";
 
 export type AdapterMode = 'execute' | 'return-bytes';
 

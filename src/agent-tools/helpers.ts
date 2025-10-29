@@ -51,17 +51,24 @@ export function toBigIntString(value: bigint | number | string): string {
   return BigInt(value).toString();
 }
 
-export function createToolResult<TData>(data: TData, summary?: string): ToolExecutionResult<TData> {
-  return { data, summary };
+export function createToolResult<TData>(
+  data: TData,
+  summary?: string,
+  errorMessage?: string
+): ToolExecutionResult<TData> {
+  const finalSummary = errorMessage ? `${summary ?? ''} | Error: ${errorMessage}` : summary ?? '';
+  return { data, summary: finalSummary ?? '', errorMessage };
 }
 
 export function formatTxResult<TData extends { txHash: string }>(
   action: string,
   data: TData,
-  extraDetails?: string
+  extraDetails?: string,
+  errorMessage?: string
 ): ToolExecutionResult<TData> {
   const summary = extraDetails
-    ? `${action}: ${extraDetails} (tx ${data.txHash})`
-    : `${action}: submitted transaction ${data.txHash}`;
-  return createToolResult(data, summary);
+    ? `${action}: ${extraDetails} (tx ${data.txHash || 'n/a'})`
+    : `${action}: submitted transaction ${data.txHash || 'n/a'}`;
+
+  return createToolResult(data, summary, errorMessage);
 }
