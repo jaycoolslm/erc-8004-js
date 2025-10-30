@@ -75,7 +75,7 @@ async function main() {
     tools,
     memory,
     returnIntermediateSteps: false,
-    verbose: true
+    // verbose: true
   });
 
   while (true) {

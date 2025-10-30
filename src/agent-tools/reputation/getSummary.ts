@@ -54,7 +54,7 @@ export const getSummary: ToolDefinition<ReputationGetSummaryResult> = {
             tag2: input.tag2,
           },
         },
-        `Summary for agent ${toBigIntString(input.agentId)} with ${toBigIntString(result.count)} entries`
+        `Summary for agent ${toBigIntString(input.agentId)} with ${toBigIntString(result.count)} entries and average score ${result.averageScore.toFixed(2)}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while fetching summary';

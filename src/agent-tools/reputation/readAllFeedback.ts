@@ -8,6 +8,7 @@ import {
   toBigIntString,
 } from '../helpers';
 import { SchemaParser } from "../schema-parser";
+import { hexToBytes, hexToString } from "viem";
 
 const schema = z.object({
   agentId: agentIdSchema,
@@ -36,7 +37,7 @@ export interface ReputationReadAllFeedbackResult {
 
 export const readAllFeedback: ToolDefinition<ReputationReadAllFeedbackResult> = {
   name: 'reputation_readAllFeedback',
-  description: 'Read all feedback entries with optional client and tag filters.',
+  description: 'Read all feedback entries with optional client and tag filters. Return detailed data for each entry.',
   schema,
   execute: async (ctx, rawInput: ReputationReadAllFeedbackInput) => {
     try {
@@ -64,7 +65,7 @@ export const readAllFeedback: ToolDefinition<ReputationReadAllFeedbackResult> = 
             includeRevoked: input.includeRevoked,
           },
         },
-        `Read ${result.scores.length} feedback entries for agent ${toBigIntString(input.agentId)}`
+        `Read ${result.scores.length} feedback entries for agent ${toBigIntString(input.agentId)}. Feedbacks: ${JSON.stringify(result, null, 2)}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while reading all feedback';

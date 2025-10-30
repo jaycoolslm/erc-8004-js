@@ -50,7 +50,7 @@ export const readFeedback: ToolDefinition<ReputationReadFeedbackResult> = {
           tag2: feedback.tag2,
           isRevoked: feedback.isRevoked,
         },
-        `Read feedback index ${toBigIntString(input.index)} for agent ${toBigIntString(input.agentId)}`
+        `Read feedback index ${toBigIntString(input.index)} for agent ${toBigIntString(input.agentId)}. Feedback: ${JSON.stringify(feedback, null, 2)}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while reading feedback';

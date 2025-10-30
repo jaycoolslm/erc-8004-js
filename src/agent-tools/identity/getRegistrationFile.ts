@@ -29,7 +29,7 @@ export const getRegistrationFile: ToolDefinition<IdentityGetRegistrationFileResu
           agentId: toBigIntString(input.agentId),
           registration,
         },
-        `Fetched registration file for agent ${toBigIntString(input.agentId)}`
+        `Fetched registration file for agent ${toBigIntString(input.agentId)}. Registration: ${JSON.stringify(registration, null, 2)}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while fetching registration file';

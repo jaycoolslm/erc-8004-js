@@ -28,7 +28,7 @@ export const getClients: ToolDefinition<ReputationGetClientsResult> = {
           agentId: toBigIntString(input.agentId),
           clients,
         },
-        `Found ${clients.length} feedback clients for agent ${toBigIntString(input.agentId)}`
+        `Found ${clients.length} feedback clients for agent ${toBigIntString(input.agentId)}. List: ${clients.join(', ')}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while fetching feedback clients';

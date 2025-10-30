@@ -13,7 +13,7 @@ export interface ReputationGetIdentityRegistryResult {
 
 export const getIdentityRegistry: ToolDefinition<ReputationGetIdentityRegistryResult> = {
   name: 'reputation_getIdentityRegistry',
-  description: 'Return the identity registry address that the reputation registry references.',
+  description: 'Return the identity registry address that the reputation registry references. Returns the address or information if no address was found.',
   schema,
   execute: async (ctx, rawInput: ReputationGetIdentityRegistryInput) => {
     try {
@@ -22,7 +22,7 @@ export const getIdentityRegistry: ToolDefinition<ReputationGetIdentityRegistryRe
 
       return createToolResult(
         { identityRegistry },
-        'Fetched reputation identity registry address'
+        `Fetched reputation identity registry address: ${identityRegistry}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while fetching identity registry';

@@ -23,6 +23,14 @@ export async function createAgentContext(config: AgentContextConfig): Promise<Ag
   const chainId = config.chainId ?? (await config.client.getChainId());
   const address = await config.client.getAddress();
 
+  if (!address) {
+    throw new Error('No operator account address found');
+  }
+
+  if (!chainId) {
+    throw new Error('No chain ID found');
+  }
+
   return {
     client: config.client,
     chainId,

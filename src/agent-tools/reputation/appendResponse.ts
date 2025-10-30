@@ -12,7 +12,7 @@ import { SchemaParser } from "../schema-parser";
 
 const schema = z.object({
   agentId: agentIdSchema,
-  clientAddress: addressSchema,
+  clientAddress: addressSchema.describe('The address of the account that submitted the feedback to which the response will be attached. Must be a valid address (0x...).'),
   feedbackIndex: bigIntSchema,
   responseUri: z.string().optional(),
   responseHash: optionalBytes32Schema,

@@ -18,9 +18,10 @@ export interface IdentityGetMetadataResult {
 
 export const getMetadata: ToolDefinition<IdentityGetMetadataResult> = {
   name: 'identity_getMetadata',
-  description: 'Read an on-chain metadata value by key for the given agent.',
+  description: 'Read an on-chain metadata value by key for the given agent. User MUST provide a valid key of metadata JSON. If no key was passed reply with request to specify it. If no value is found, return "N/A".',
   schema,
   execute: async (ctx, rawInput: IdentityGetMetadataInput) => {
+    console.log(`identity_getMetadata called`);
     try {
       const input = SchemaParser.parseParamsWithSchema(rawInput, schema);
       const value = await ctx.client.identity.getMetadata(input.agentId, input.key) || 'N/A';
@@ -30,7 +31,7 @@ export const getMetadata: ToolDefinition<IdentityGetMetadataResult> = {
           key: input.key,
           value,
         },
-        `Read metadata ${input.key} for agent ${toBigIntString(input.agentId)}`
+        `Read metadata ${input.key} for agent ${toBigIntString(input.agentId)}. The value is ${value}`
       );
     } catch (error: any) {
       const message = error instanceof Error ? error.message : 'Unknown error while reading metadata';
