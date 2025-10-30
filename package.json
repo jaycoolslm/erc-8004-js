@@ -1,7 +1,7 @@
 {
-  "name": "erc-8004-js",
+  "name": "erc-8004-js-agent-kit",
   "version": "0.1.4",
-  "description": "TypeScript SDK for ERC-8004 Trustless Agents protocol",
+  "description": "TypeScript SDK with set of Agentic Tools for ERC-8004 Trustless Agents protocol",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/prompts": "^2.4.9",
     "ethers": "^6.0.0",
     "ts-node": "^10.9.0",
     "typescript": "^5.0.0",
@@ -36,7 +37,15 @@
   },
   "dependencies": {
     "@hashgraph/sdk": "^2.75.0",
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.2",
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "ai": "^5.0.80",
     "dotenv": "^17.2.3",
-    "multiformats": "^13.4.1"
+    "erc-8004-js": "^0.1.4",
+    "langchain": "^0.3.30",
+    "multiformats": "^13.4.1",
+    "prompts": "^2.4.2",
+    "zod": "^3.25.76"
   }
 }
