@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { appendResponse } from './appendResponse';
-import { createFeedbackAuth } from './createFeedbackAuth';
+import { createAndSignFeedbackAuth } from './createAndSignFeedbackAuth';
 import { getClients } from './getClients';
 import { getIdentityRegistry } from './getIdentityRegistry';
 import { getLastIndex } from './getLastIndex';
@@ -10,11 +10,9 @@ import { giveFeedback } from './giveFeedback';
 import { readAllFeedback } from './readAllFeedback';
 import { readFeedback } from './readFeedback';
 import { revokeFeedback } from './revokeFeedback';
-import { signFeedbackAuth } from './signFeedbackAuth';
 
 export const reputationTools = [
-  createFeedbackAuth,
-  signFeedbackAuth,
+  createAndSignFeedbackAuth,
   giveFeedback,
   revokeFeedback,
   appendResponse,
@@ -38,8 +36,7 @@ export const reputationToolDictionary: Record<string, ToolDefinition> = reputati
 export const createReputationTools = () => [...reputationTools];
 
 export {
-  createFeedbackAuth,
-  signFeedbackAuth,
+  createAndSignFeedbackAuth,
   giveFeedback,
   revokeFeedback,
   appendResponse,
