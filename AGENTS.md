@@ -1,32 +1,70 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/` holds the TypeScript SDK; clients such as `ERC8004Client.ts`, `IdentityClient.ts`, `ReputationClient.ts`, and `ValidationClient.ts` compose the public API, while `adapters/`, `utils/`, and `types.ts` supply shared plumbing.
-- `src/abis/` maintains contract ABIs that must stay in sync with on-chain deployments; update carefully when contracts change.
-- `examples/` offers runnable integration scripts (`testValidation.ts`, `testReputation.ts`, etc.) that double as scenario tests.
-- `docs/` captures contributor-facing guides. Add deep dives here rather than in README.
+
+This repository provides an **agentic toolkit** for ERC-8004, consisting of:
+
+- **`src/agent-tools/`** - Core tool definitions organized by category:
+  - `identity/` - Tools for agent registration, metadata management, owner lookups, and token URI operations
+  - `reputation/` - Tools for feedback authorization, submission, queries, and reputation summaries
+  - `context.ts` - Creates `AgentContext` that threads client config, chain metadata, and optional helpers through every tool
+  - `types.ts` - Shared TypeScript interfaces for tool definitions, parameters, and results
+  - `helpers.ts` - Utility functions for tool execution and error handling
+  - `schema-parser.ts` - Zod schema validation and parsing utilities
+
+- **`src/agent-adapters/`** - Framework-specific adapters that convert tool definitions into usable formats:
+  - `langchain.ts` - Exports `createLangChainTools()` to generate LangChain StructuredTool instances
+  - `ai-sdk.ts` - Exports `createAiSdkTools()` to generate Vercel AI SDK tool records
+  - `mcp.ts` - Exports `createMcpServer()` and `registerAgentToolsWithMcpServer()` for Model Context Protocol integration
+
+- **`examples/`** - Runnable integration examples:
+  - `ai-sdk-agent.ts` - Demonstrates Vercel AI SDK integration
+  - `langchain-agent.ts` - Shows LangChain agent setup with conversational memory
+  - `mcp-server.ts` - Illustrates MCP server creation and startup
+
+- **`docs/`** - Contributor-facing documentation:
+  - `AGENT_TOOLS.md` - Quick start guide for the agentic toolkit
+
+- **External SDK dependency** - This package depends on `erc-8004-js` (the base SDK) which provides:
+  - `ERC8004Client` - Main client with `identity`, `reputation`, and `validation` sub-clients
+  - `EthersAdapter` / `ViemAdapter` - Blockchain provider adapters
+  - Contract ABIs and type definitions
 
 ## Build, Test, and Development Commands
-- `npm install` brings in dev-time dependencies (`typescript`, `ts-node`, `ethers`, `viem`).
-- `npm run build` runs the TypeScript compiler with `tsconfig.json`, emitting artifacts to `dist/`.
-- `npx ts-node examples/testValidation.ts` (or other example files) executes smoke tests against a Hardhat node; configure `.env` as needed for RPC URLs and keys.
+
+- `npm install` - Installs dependencies including `erc-8004-js`, `@langchain/core`, `ai`, `@modelcontextprotocol/sdk`, and framework-specific packages
+- `npm run build` - Compiles TypeScript to `dist/`, emitting both JS and type definitions
+- `tsx examples/ai-sdk-agent.ts` - Runs the Vercel AI SDK example (configure `.env` first)
+- `tsx examples/langchain-agent.ts` - Runs the LangChain agent example (configure `.env` first)
+- `tsx examples/mcp-server.ts` - Starts the MCP server example (configure `.env` first)
 
 ## Coding Style & Naming Conventions
-- Prefer TypeScript, strict typing, and keep modules single-responsibility; shared helpers belong in `src/utils/`.
-- Follow existing 2-space indentation, arrow functions for callbacks, and descriptive camelCase for variables/functions. Exported classes and types use PascalCase.
-- Document non-obvious logic with single-line `//` comments; avoid block comments except for file headers.
-- Run `npm run build` before pushing to catch type or lint regressions (the strict compiler is our primary guardrail).
 
-## Testing Guidelines
-- We rely on scenario scripts under `examples/` until formal unit tests land. Tailor new flows by copying an existing file and prefixing with `test`.
-- Target at least one on-chain happy path and one failure path per feature; include assertions on returned structs and emitted data.
-- When changing contracts or ABIs, validate against a local Hardhat network (`npx hardhat node`) and document any new deployment addresses in the example files.
+- **TypeScript strict mode** - All code uses strict typing with explicit return types
+- **Tool naming** - Use snake_case for tool names (e.g., `identity_register`, `reputation_give_feedback`)
+- **Module organization** - Each tool lives in its own file under `src/agent-tools/<category>/<toolName>.ts`
+- **Exports** - Category index files (`identity/index.ts`, `reputation/index.ts`) export both array (`identityTools`) and dictionary (`identityToolDictionary`) for flexible access
+- **Indentation** - 2 spaces, no tabs
+- **Comments** - Document non-obvious logic with single-line `//` comments
+- **Type safety** - All tool parameters validate through Zod schemas before execution
+
 
 ## Commit & Pull Request Guidelines
-- Keep commits focused with short, imperative messages mirroring current history (`update readme`, `rename`). Squash noisy fixups.
-- Pull requests should describe intent, list manual verification (commands run, networks used), and link issues when applicable. Add screenshots for UI-oriented changes (if any).
-- Request review early for protocol changes; note breaking API updates in the PR body and prepare a follow-up docs task when needed.
+
+- **Commit messages** - Use conventional commits format: `feat:`, `fix:`, `refactor:`, `docs:`
+- **Breaking changes** - Mark with `!` and document in PR body (e.g., `feat!: rename tool parameters`)
+- **Tool additions** - Include example usage in PR description
+- **Adapter changes** - Test all three adapters (LangChain, AI SDK, MCP) before submitting
+- **Documentation** - Update `AGENT_TOOLS.md` when adding categories or changing API surface
 
 ## Environment & Security Tips
-- Store RPC URLs, private keys, and IPFS tokens in `.env`; never commit secrets. `dotenv` loads them for local scripts.
-- Default to Sepolia or Hardhat for experimentation. Double-check chain IDs in `ERC8004Client` configs before broadcasting to production networks.
+
+- **Environment variables** - Store in `.env` at project root:
+  - `RPC_URL` - Blockchain RPC endpoint
+  - `HEDERA_TESTNET_PRIVATE_KEY_1` - Signer private key, adapt the `./examples` code to use other chains and envs
+  - `IDENTITY_REGISTRY`, `REPUTATION_REGISTRY`, `VALIDATION_REGISTRY` - Contract addresses
+  - `CHAIN_ID` - Network chain ID (296 for Hedera testnet, 31337 for Hardhat)
+  - `OPENAI_API_KEY` - Required for LangChain example
+- **Never commit secrets** - `.env` is gitignored
+- **Default networks** - Examples default to Hedera testnet; adjust for local development or other chains
+- **Adapter modes** - Set `adapterMode: 'return-bytes'` in `AgentContext` to receive raw data structures instead of summaries
