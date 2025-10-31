@@ -2,15 +2,19 @@ import {
   ERC8004Client,
   EthersAdapter,
 } from "erc-8004-js";
-import { JsonRpcProvider } from "ethers";
+import { ethers, JsonRpcProvider } from "ethers";
 import { createAiSdkTools } from "../src/agent-adapters";
 import { createAgentContext } from "../src/agent-tools";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 async function main() {
-  const provider = new JsonRpcProvider(
-    process.env.RPC_URL ?? "http://localhost:8545"
+  const provider = new JsonRpcProvider("https://testnet.hashio.io/api");
+  const signer = new ethers.Wallet(
+    process.env.HEDERA_TESTNET_PRIVATE_KEY_1!,
+    provider
   );
-  const signer = await provider.getSigner();
   const adapter = new EthersAdapter(provider, signer);
 
   const client = new ERC8004Client({

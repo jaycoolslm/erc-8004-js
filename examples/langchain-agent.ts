@@ -20,7 +20,7 @@ async function main() {
   const llm = new ChatOpenAI({
     model: "gpt-4o-mini",
   });
-  const provider = new JsonRpcProvider("https://testnet.hashio.io/api");
+  const provider = new JsonRpcProvider(process.env.RPC_URL ?? 'http://localhost:8545');
   const signer = new ethers.Wallet(
     process.env.HEDERA_TESTNET_PRIVATE_KEY_1!,
     provider

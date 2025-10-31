@@ -1,13 +1,19 @@
-import { JsonRpcProvider } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ERC8004Client, EthersAdapter } from "erc-8004-js";
 import { createAgentContext } from "../src/agent-tools";
 import { createMcpServer } from "../src/agent-adapters";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+// FIXME: the MCP is not working
 async function main() {
   const provider = new JsonRpcProvider(process.env.RPC_URL ?? 'http://localhost:8545');
-  const signer = await provider.getSigner();
+  const signer = new ethers.Wallet(
+    process.env.HEDERA_TESTNET_PRIVATE_KEY_1!,
+    provider
+  );
   const adapter = new EthersAdapter(provider, signer);
-
   const client = new ERC8004Client({
     adapter,
     addresses: {
@@ -18,7 +24,7 @@ async function main() {
     },
   });
 
-  const context = await createAgentContext({ client });
+  const context = await createAgentContext({client});
   const server: any = await createMcpServer(context);
 
   if (typeof server.start === 'function') {

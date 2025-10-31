@@ -1,4 +1,4 @@
-import type { AgentContext } from '../agent-tools/context';
+import type { AgentContext } from '../agent-tools';
 import { createAgentTools, type CreateAgentToolsOptions } from '../agent-tools';
 
 export interface McpAdapterOptions extends CreateAgentToolsOptions {
